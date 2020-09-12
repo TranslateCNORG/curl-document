@@ -178,7 +178,7 @@ HTTP提供了许多不同的身份验证方法，curl支持这些身份验证方
 
 最常用于私有证书。
 
-### Proxy
+## Proxy
 
 curl支持HTTP和SOCKS代理服务器，并提供多个的身份验证方法。它没有对FTP代理服务器支持，这个服务器目前没有标准，但是它仍然可以和其它许多服务器一起工作。您还可以使用HTTP和SOCKS代理在FTP服务器之间传输文件。
 
@@ -194,4 +194,74 @@ curl -x my-proxy:888 ftp://ftp.leachsite.com/README
 curl -u user:passwd -x my-proxy:888 http://www.get.this/
 ```
 
+有些代理需要用户名和密码，用 `-U`(`--proxy-user`) 参数:
 
+```bash
+curl -U user:passwd -x my-proxy:888 http://www.get.this/
+```
+
+使用 `--noproxy` 参数来指定不走代理的网站:
+
+```bash
+curl --noproxy localhost,get.this -x my-proxy:888 http://www.get.this/
+```
+
+如果使用 `--proxy1.0` 参数而不是 `--proxy` 或 `-x` 参数指定代理，那么curl会使用 `HTTP/1.0` 而不是 `HTTP/1.1` 尝试连接服务器。
+
+---
+
+curl还支持SOCKS4和SOCKS5代理，使用它们的参数分别是 `--socks4` 和 `socks5`。
+
+另外请参见curl支持的环境变量，环境这些变量提供了更好的代理使用。
+
+站在客户端的角度来看，大多数FTP代理服务器都被设置成普通的FTP服务器，使用特殊的参数来选择远程FTP服务器。curl支持 `-u` 、`-Q` 和 `--ftp-account` 参数，这些参数可用于更多ftp代理进行的传输。例如，可以使用Blue Coat FTP代理将文件上载到远程FTP服务器:
+
+```bash
+curl -u "username@ftp.server Proxy-Username:Remote-Pass" \
+--ftp-account Proxy-Password --upload-file local-file \
+ftp://my-ftp.proxy.server:21/remote/upload/path/
+```
+
+* `ftp.server` 是ftp代理服务器的地址
+* `Proxy-Username` 是连接代理时的用户名
+* `Remote-Pass` 无需改动
+* `Proxy-Password` 连接代理的密码
+* `lical-file` 要上传的文件位置
+
+请参阅FTP代理手册(未翻译)以确定设置它传输的形式，curl的-v参数可以查看curl和服务端交互的过程。
+
+```bash
+curl -v https://www.baidu.com/
+```
+
+## 获取范围
+
+难道curl只能获取完整的网页/文件吗？不能指定范围？
+
+curl是可以指定范围的，`-r` 参数用来指定范围。
+
+HTTP1.1引入了byte(相当于一个字)范围。使用此方法，客户端可以请求仅获取指定网页/文件的一部分。curl用 `-r` 参数支持这一点。
+
+获取网页/文件前100个字，第一个算0，以此类推:
+
+```bash
+curl -r 0-99 http://www.baidu.com/
+```
+
+获取网页/文件从最后一个字开始算，获取500个字:
+
+```bash
+curl -r -500 https://m.baidu.com/ # 不用 www.baidu.com 的原因是字太少了
+```
+
+Curl还支持指定FTP服务器上的文件的范围。只能指定开始位置和停止位置。
+
+获取ftp服务器上的文件的前100个字:
+
+```bash
+curl -r 0-99 ftp://www.get.this/README
+```
+
+## 上传文件
+
+### FTP / FTPS / SFTP / SCP
