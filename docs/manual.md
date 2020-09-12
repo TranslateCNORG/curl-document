@@ -228,7 +228,7 @@ ftp://my-ftp.proxy.server:21/remote/upload/path/
 * `Proxy-Password` 连接代理的密码
 * `lical-file` 要上传的文件位置
 
-请参阅FTP代理手册(未翻译)以确定设置它传输的形式，curl的-v参数可以查看curl和服务端交互的过程。
+请参阅FTP代理手册(未翻译)以确定设置它传输的形式，curl的 `-v` 参数可以查看curl和服务端交互的过程。
 
 ```bash
 curl -v https://www.baidu.com/
@@ -265,3 +265,66 @@ curl -r 0-99 ftp://www.get.this/README
 ## 上传文件
 
 ### FTP / FTPS / SFTP / SCP
+
+将标准输出的所有数据上传到指定的服务器，使用 `-T` 参数把数据上传到指定的服务器，仅对上传数据无需密码和用户名的服务器生效:
+
+*标准输入，一般指键盘输入到缓冲区里的东西。*
+
+```bash
+curl -T - ftp://ftp.upload.com/myfile
+```
+
+使用用户名和密码登录服务器，上传数据，`uploadfile` 是要上传的文件的位置:
+
+```bash
+curl -T uploadfile -u user:passwd ftp://ftp.upload.com/myfile
+```
+
+将本地文件上传到服务器，并使用服务器上的文件名:
+
+```bash
+curl -T uploadfile -u user:passwd ftp://ftp.upload.com/xx.xxx
+```
+
+上传本地文件附加到目标文件，`-a` 参数的意思是上传时附加到目标文件:
+
+```bash
+curl -T localfile -a ftp://ftp.upload.com/remotefile
+```
+
+curl还支持使用代理进行ftp上传，但前提是代理被配置允许这种隧道传输。如果有配置，就可以使用类似于以下方式，`--proxytunnel` 参数是代理已配置隧道的意思:
+
+```bash
+curl --proxytunnel -x proxy:port -T localfile ftp.upload.com
+```
+
+### SMB / SMBS
+
+和ftp差不多:
+
+```bash
+curl -T file.txt -u "domain\username:passwd" \
+  smb://server.example.com/share/
+```
+
+### HTTP
+
+将标准输出的所有数据上传到指定的HTTP网站:
+
+```bash
+curl -T - http://www.upload.com/myfile
+```
+
+请注意!必须先将HTTP服务器配置设置为接受PUT请求，才能成功执行此操作。
+
+有关HTTP数据上传的其他方法，请看下面的POST部分(不是下一个)。
+
+## Verbose / Debug
+
+curl在某些地方出错、服务器不允许您进入、您无法理解响应，用 `-v` 参数获取详细的curl和服务端交互过程。`-v` 参数会输出大量信息以及它发送和接收的内容，以便让用户看到所有的客户端和服务器交互(但它不会向您显示实际的数据)。
+
+```bash
+curl -v http://www.baidu.com/
+```
+
+
