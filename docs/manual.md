@@ -112,7 +112,7 @@ curl -o baidu.html https://www.baidu.com/
 |2|baidu.html|可自定义，网页/文件下载后保存的名字|
 |3|https://www.baidu.com/|要下载的网页/文件|
 
-和上面的功能一样，-O参数比-o参数更加方便，不用指定下载后的文件明，但是要在网址中指定文件名，说到这里你可能搞不懂了，什么才叫做没有指定文件名？这里的没有指定文件名的意思就是在网址中没有指定要下载的网页/文件的类型，就像原本要下载一张类型为png的图片 `https://xxx.com/xxx.png` ，但被你省略了后缀(.png `https://xxx.com/xxx`)，这就叫做网址中没有指定文件名，也可以叫做网址中没有指定下载网页/文件的后缀。你肯定会想到一个网页的主页该怎么下载呢？难道只能用 `-o` 了吗？`-O` 参数也能下载，你访问每个网页的主页都相当于访问 https://一个网址/index.html (index.html还可以是index.htm)，只要下载 `https://一个网址/index.html` 就能下载网页的主页。
+和上面的功能一样，-O参数比-o参数更加方便，不用指定下载后的文件名，但是要在网址中指定文件名，说到这里你可能搞不懂了，什么才叫做没有指定文件名？这里的没有指定文件名的意思就是在网址中没有指定要下载的网页/文件的类型，就像原本要下载一张类型为png的图片 `https://xxx.com/xxx.png` ，但被你省略了后缀(.png `https://xxx.com/xxx`)，这就叫做网址中没有指定文件名，也可以叫做网址中没有指定下载网页/文件的后缀。你肯定会想到一个网页的主页该怎么下载呢？难道只能用 `-o` 了吗？`-O` 参数也能下载，你访问每个网页的主页都相当于访问 https://一个网址/index.html (index.html还可以是index.htm)，只要下载 `https://一个网址/index.html` 就能下载网页的主页。
 
 ```bash
 curl -O https://www.baidu.com/index.html
@@ -458,11 +458,11 @@ curl -A ''Mozilla/3.0 (Win95; I)' https://www.baidu.com
 
 其他常用的ua:
 
-* `Mozilla/3.0 (Win95; I)` - Netscape Version 3 for Windows 95
-* `Mozilla/3.04 (Win95; U)` - Netscape Version 3 for Windows 95
-* `Mozilla/2.02 (OS/2; U)` - Netscape Version 2 for OS/2
-* `Mozilla/4.04 [en] (X11; U; AIX 4.2; Nav)` - Netscape for AIX
-* `Mozilla/4.05 [en] (X11; U; Linux 2.0.32 i586)` - Netscape for Linux
+* `Mozilla/3.0 (Win95; I)` - Netscape Version 3 在  Windows 95
+* `Mozilla/3.04 (Win95; U)` - Netscape Version 3 在 Windows 95
+* `Mozilla/2.02 (OS/2; U)` - Netscape Version 2 在 OS/2
+* `Mozilla/4.04 [en] (X11; U; AIX 4.2; Nav)` - Netscape 在 AIX
+* `Mozilla/4.05 [en] (X11; U; Linux 2.0.32 i586)` - Netscape 在 Linux
 
 请注意，Internet Explorer(简称IE)尽量在各个方面保持兼容(IE准备停止维护了，推荐不要用IE ua):
 
@@ -470,8 +470,8 @@ curl -A ''Mozilla/3.0 (Win95; I)' https://www.baidu.com
 
 非Mozilla的ua:
 
-* `Konqueror/1.0` - KDE File Manager desktop client
-* `Lynx/2.7.1 libwww-FM/2.14` - Lynx command line browser
+* `Konqueror/1.0` - KDE文件管理器桌面客户端
+* `Lynx/2.7.1 libwww-FM/2.14` - Lynx命令行浏览器
 
 ## Cookies
 
@@ -521,6 +521,27 @@ curl -c cookie.txt www.baidu.com
 curl -L -b a.txt https://www.baidu.com
 ```
 
-读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl将根据文件内容确定它是哪种类型。在上面的命令中，curl将解析标头并发送到 www.baidu.com。curl向服务器发送存储的cookies，这些cookies与请求一样，因为它跟踪了位置。`a.txt` 可以是不存在的文件。
+读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl将根据文件内容确定它是哪种类型。在上面的命令中，curl将解析标头并发送到 www.baidu.com 。curl向服务器发送存储的cookies，这些cookies与请求一样，因为它跟踪了位置。cookie可以是不存在的。
 
-## 进度
+## 进度表
+
+当你下载网页/文件时应该会出现这样的表:
+
+![下载时出现的界面](https://s1.ax1x.com/2020/09/11/wUkNWT.png)
+
+进度条是为了显示实时更新的一些东西，就像下载进度。
+
+含义解释(从左到右):
+
+* % - 完成工作的百分比
+* Total - 整个网页/文件总大小
+* % - 已经下载的百分比
+* Received - 已经下载的大小
+* % - 上传完成的百分比
+* Xferd - 已经上传的百分比
+* Average Speed Dload - 下载的平均速度
+* Average Speed Upload  - 上传的平均速度
+* Time Total - 完成工作的总时间
+* Time Spent - 当前已用用的时间
+* Time Left - 预计完成时间
+* Current Speed - 最后5秒的平均传输速度
