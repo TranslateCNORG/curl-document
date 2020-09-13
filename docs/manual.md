@@ -503,7 +503,7 @@ curl --dump-header headers www.baidu.com
 
 执行完命令，会发现目录下多了一个headers文件，打开能看到最后一行的 `Set-Cookie: BDORZ=27315; max-age=86400; domain=.baidu.com; path=/` 。
 
-然后可以把保存下来的 `headers` 再"写"入网页。可以是同一个网页，也可以是另一个网页:
+然后可以把保存下来的 `headers` 再发送到网页。可以是同一个网页，也可以是另一个网页:
 
 ```bash
 curl -b headers m.baidu.com
@@ -515,13 +515,13 @@ curl -b headers m.baidu.com
 curl -c cookie.txt www.baidu.com
 ```
 
-请注意，通过指定 `-b` 可以启动 "cookie意识"，使用 `-L` 可以让网页不重定向(通常与cookies结合起来使用)。如果站点发送cookie和位置，您可以使用一个不存在的文件来启动 "cookie意识"，例如:
+请注意，`-b` + `-L`(如果网页要跳转至新网页会自动跳转)可以把cookie新页面(如果有)。发送给服务器的cookie不一定有，例如:
 
 ```bash
-curl -L -b a.txt https://www.baidu.com
+curl -L -b a.txt https://www.baidu.com # a.txt 是不存在的
 ```
 
-读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl根据文件内容确定它是哪种类型。在上面的命令中，curl将解析后的标头并发送到 www.baidu.com 。curl向服务器发送存储的cookies，这些cookies与请求一样，因为它不重定向网页。cookie可以是没有的。
+读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl根据文件内容确定它是哪种类型。在上面的命令中，curl将解析后的标头并发送到 https://www.baidu.com 。cookie是可以没有的。
 
 ## 进度表
 
@@ -545,3 +545,5 @@ curl -L -b a.txt https://www.baidu.com
 * Time Spent - 当前已用用的时间
 * Time Left - 预计完成时间
 * Current Speed - 最后5秒的平均传输速度
+
+
