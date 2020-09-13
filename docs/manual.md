@@ -523,6 +523,12 @@ curl -L -b a.txt https://www.baidu.com # a.txt 是不存在的
 
 读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl根据文件内容确定它是哪种类型。在上面的命令中，curl将解析后的标头并发送到 https://www.baidu.com 。cookie是可以没有的。
 
+还可以从服务器获取cookie然后再发送给服务器:
+
+```bash
+curl -b cookie.txt -c cookie.txt https://www.baidu.com
+```
+
 ## 进度表
 
 当你下载网页/文件时应该会出现这样的表:
@@ -545,5 +551,7 @@ curl -L -b a.txt https://www.baidu.com # a.txt 是不存在的
 * Time Spent - 当前已用用的时间
 * Time Left - 预计完成时间
 * Current Speed - 最后5秒的平均传输速度
+
+参数 `-#` 表示一个完全不同的百分进度条，只有下载进度。
 
 
