@@ -515,13 +515,13 @@ curl -b headers m.baidu.com
 curl -c cookie.txt www.baidu.com
 ```
 
-请注意，通过指定 `-b` 可以启动 "cookie意识"，使用 `-L` 可以使curl跟踪一个位置: (通常与cookies结合起来使用)。如果站点发送cookie和位置，您可以使用一个不存在的文件来启动 "cookie意识"，例如:
+请注意，通过指定 `-b` 可以启动 "cookie意识"，使用 `-L` 可以让网页不重定向(通常与cookies结合起来使用)。如果站点发送cookie和位置，您可以使用一个不存在的文件来启动 "cookie意识"，例如:
 
 ```bash
 curl -L -b a.txt https://www.baidu.com
 ```
 
-读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl将根据文件内容确定它是哪种类型。在上面的命令中，curl将解析标头并发送到 www.baidu.com 。curl向服务器发送存储的cookies，这些cookies与请求一样，因为它跟踪了位置。cookie可以是不存在的。
+读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl根据文件内容确定它是哪种类型。在上面的命令中，curl将解析后的标头并发送到 www.baidu.com 。curl向服务器发送存储的cookies，这些cookies与请求一样，因为它不重定向网页。cookie可以是没有的。
 
 ## 进度表
 
