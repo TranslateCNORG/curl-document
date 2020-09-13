@@ -176,7 +176,7 @@ HTTP提供了许多不同的身份验证方法，curl支持这些身份验证方
 
 ### HTTPS
 
-最常用于私有证书。
+常用于私有证书。
 
 ## Proxy
 
@@ -351,7 +351,7 @@ curl -D baiduheaders.txt https://www.baidu.com/ # 把 www.baidu.com 的头部信
 
 ## POST传输(HTTP)
 
-使用curl很容易传输数据。这是使用 `-d <data>` 参数完成的。传输数据必须是编码过的。
+使用curl很容易传输数据。这是使用 `-d <data>` 参数完成的。传输数据必须是编码过的。使用了 `-d` 参数，curl会给 HTTP 标头加上 `Content-Type : application/x-www-form-urlencoded`
 
 ```bash
 curl -d "name=Rafael%20Sagula&phone=3320780" http://www.where.com/guest.cgi
@@ -403,7 +403,7 @@ curl -d "user=foobar&pass=12345&id=blablabla&ding=submit" \
 
 `-d` 参数使用的是 `application/x-www-form-urlencoded` 传输类型，CGI和类似的文件通常都能理解，但是curl也支持功能更强的 `multipart/form` 传输类型，这一种类型很像文件上传。
 
-`-F` 接受像 `-F "name=contents"` 这样的参数。如果要从文件中读取内容传输，请使用 `@filename` 作为内容。指定文件时，还可以通过在文件名后追加 `;type=<mime type>` 来指定文件内容类型。也可以在一个字段中发布多个文件的内容。例如，属性名 `coolfiles` 用于发送三个不同类型的文件，使用以下语法:
+`-F` 参数的值是 `-F "name=contents"` 这样的。如果要从文件中读取内容再传输，请使用 `@filename` 作为文件。指定文件时，还可以通过在文件名后追加 `;type=<mime type>` 来指定文件内容类型。也可以在一个字段中发布多个文件的内容，curl会自动给 HTTP 标头添加 `Content-Type: multipart/form-data` 。例如，属性名 `coolfiles` 用于发送三个不同类型的文件，使用以下语法:
 
 ```bash
 curl -F "coolfiles=@fil1.gif;type=image/gif,fil2.txt,fil3.html" \
@@ -435,5 +435,40 @@ curl -F "docpicture=@dog.gif" -F "catpicture=@cat.gif" $URL
 ```
 
 如果要按字面方式发送 name 值，而不解释前缀是 `@` 或 `<` ,或嵌入的 `;type=` ，请使用 `--form-string` 而不是 `-F` 。当值是从用户或其他不可预知的地方获取时，建议使用这种方法。在这种情况下(不是前面那种情况)，使用 `-F` 而不是 `--form-string` 用户可以欺骗curl上传文件。
+
+还可以使用 `;filename=` 指定上传后的文件名。
+
+## Referer
+
+设置 HTTP 的标头 Referer，表示请求的来源(没啥用)。使用 `-e` 参数就能做到。
+
+```bash
+curl -e https://www.baidu.com https://www.csdn.net
+```
+
+## 用户标志(User Agent)
+
+curl可以改变请求中的User Agent(简称ua)。使用 `-A` 参数指定ua。
+
+```bash
+curl -A ''Mozilla/3.0 (Win95; I)' https://www.baidu.com
+```
+
+其他常用的ua:
+
+* `Mozilla/3.0 (Win95; I)` - Netscape Version 3 for Windows 95
+* `Mozilla/3.04 (Win95; U)` - Netscape Version 3 for Windows 95
+* `Mozilla/2.02 (OS/2; U)` - Netscape Version 2 for OS/2
+* `Mozilla/4.04 [en] (X11; U; AIX 4.2; Nav)` - Netscape for AIX
+* `Mozilla/4.05 [en] (X11; U; Linux 2.0.32 i586)` - Netscape for Linux
+
+请注意，Internet Explorer(简称IE)尽量在各个方面保持兼容(IE准备停止维护了，推荐不要用IE ua):
+
+* `Mozilla/4.0 (compatible; MSIE 4.01; Windows 95)` - MSIE for W95
+
+非Mozilla的ua:
+
+* `Konqueror/1.0` - KDE File Manager desktop client
+* `Lynx/2.7.1 libwww-FM/2.14` - Lynx command line browser
 
 
