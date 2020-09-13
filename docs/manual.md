@@ -337,6 +337,8 @@ curl --trace baidu.txt https://www.baidu.com/
 
 不同的协议提供了获取网页/文件的头部信息的不同方法。要让curl显示一个文件的头部信息，要使用 `-I`/`--head` 参数。它可以显示一个HTTP或FTP网页/文件的头部信息。HTTP头部信息要广泛得多。
 
+*网页头部信息和网页标头意思一样*
+
 ```bash
 curl -I https://www.baidu.com/
 ```
@@ -470,5 +472,41 @@ curl -A ''Mozilla/3.0 (Win95; I)' https://www.baidu.com
 
 * `Konqueror/1.0` - KDE File Manager desktop client
 * `Lynx/2.7.1 libwww-FM/2.14` - Lynx command line browser
+
+## Cookies
+
+*Cookie，有时也用其复数形式 Cookies。类型为“小型文本文件”，是某些网站为了辨别用户身份，进行Session跟踪而储存在用户本地终端上的数据（通常经过加密），由用户客户端计算机暂时或永久保存的信息。*
+
+cookies通常被web服务器用来在客户端保存信息。服务器通过在 HTTP 标头中发送一个响应来设置Cookie `Set-Cookie: <data>` ，其中 data 部分通常包含一组 `NAME=VALUE` 键值对(用分号分隔 `;` 如 `NAME1=VALUE1;NAME2=VALUE2;`;。服务器还可以指定 cookie 存在哪个路径(通过指定 `path=value`)、cookie 什么时候过期(`expire=DATE`)、哪个网页能使用cookie(`domain=NAME`)、以及是否只在https连接时使用(`secure`)。在curl中使用 `-b` 参数设置cookie。
+
+*键值对由键和值组成一对，上面的NAME就是键，VALUE是值*
+
+如果服务器在标头中返回了这样的cookie:
+
+```
+Set-Cookie: sessionid=boo123; path="/foo";
+```
+
+意思是在路径为 `/foo` 的位置存储 `boo123`。
+
+例如，在一个网页中设置cookie，存上我的名字:
+
+```bash
+curl -b "name=Daniel" www.sillypage.com
+```
+
+`--dump-header` 用于把网页头部信息保存成指定文件:
+
+```bash
+curl --dump-header headers www.baidu.com
+```
+
+执行完命令，会发现目录下多了一个headers文件，打开能看到最后一行的 `Set-Cookie: BDORZ=27315; max-age=86400; domain=.baidu.com; path=/` 。
+
+然后可以把保存下来的 `headers` 再"写"入网页。可以是同一个网页，也可以是另一个网页:
+
+```bash
+curl -b headers m.baidu.com
+```
 
 
