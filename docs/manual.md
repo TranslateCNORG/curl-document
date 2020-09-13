@@ -489,10 +489,10 @@ Set-Cookie: sessionid=boo123; path="/foo";
 
 意思是在路径为 `/foo` 的位置存储 `boo123`。
 
-例如，在一个网页中设置cookie，存上我的名字:
+例如，在一个网页发送cookie，存入我的名字:
 
 ```bash
-curl -b "name=Daniel" www.sillypage.com
+curl -b "name=lihai2333" www.sillypage.com
 ```
 
 `--dump-header` 用于把网页头部信息保存成指定文件:
@@ -509,4 +509,18 @@ curl --dump-header headers www.baidu.com
 curl -b headers m.baidu.com
 ```
 
+使用标头设置cookie容易出错，这也不是一种很普遍的方法，curl提供了一个叫做 `-c` 的参数，它可以保存服务器设置的cookie:
 
+```bash
+curl -c cookie.txt www.baidu.com
+```
+
+请注意，通过指定 `-b` 可以启动 "cookie意识"，使用 `-L` 可以使curl跟踪一个位置: (通常与cookies结合起来使用)。如果站点发送cookie和位置，您可以使用一个不存在的文件来启动 "cookie意识"，例如:
+
+```bash
+curl -L -b a.txt https://www.baidu.com
+```
+
+读取的cookie文件必须使用纯HTTP标头或netscape的cookie文件格式化过。curl将根据文件内容确定它是哪种类型。在上面的命令中，curl将解析标头并发送到 www.baidu.com。curl向服务器发送存储的cookies，这些cookies与请求一样，因为它跟踪了位置。`a.txt` 可以是不存在的文件。
+
+## 进度
