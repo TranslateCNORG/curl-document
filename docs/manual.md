@@ -327,4 +327,113 @@ curl在某些地方出错、服务器不允许您进入、您无法理解响应�
 curl -v http://www.baidu.com/
 ```
 
+要获得更多curl和服务端交互的细节和信息，请使用 `--trace` 或 `--trace-ascii` 参数，把完整交互过程保存成文件:
+
+```bash
+curl --trace baidu.txt https://www.baidu.com/
+```
+
+## 详细资料
+
+不同的协议提供了获取网页/文件的头部信息的不同方法。要让curl显示一个文件的头部信息，要使用 `-I`/`--head` 参数。它可以显示一个HTTP或FTP网页/文件的头部信息。HTTP头部信息要广泛得多。
+
+```bash
+curl -I https://www.baidu.com/
+```
+
+*头部信息是指，服务端返回过来的响应信息，由于它显示在返回的数据最前面，所以叫做头部信息*
+
+对于HTTP，您可以使用 `-I`/`--include` 获取显示在数据前面的头信息（与 `-I` 相同）。curl还可以保存FTP和HTTP网页/文件的头部信息在指定的文件，要使用 `-D`/`--dump` 参数。
+
+```bash
+curl -D baiduheaders.txt https://www.baidu.com/ # 把 www.baidu.com 的头部信息保存在 baiduheaders.txt 文件中
+```
+
+## POST传输(HTTP)
+
+使用curl很容易传输数据。这是使用 `-d <data>` 参数完成的。传输数据必须是编码过的。
+
+```bash
+curl -d "name=Rafael%20Sagula&phone=3320780" http://www.where.com/guest.cgi
+```
+
+*空格编码后是 %20*
+
+使用 POST 协议给网站传输 name 值和 phone 值。
+
+*POST 是 HTTP 协议中的一种，用于给服务端传输数据，和 GIT 最大的区别是 GET 是在链接上做请求，如 https://www.where.com/guest.cgi?name=Rafael%20Sagu&phone=3320780*
+
+##### 如何发送表单数据
+
+找出网页表单中所有要填写的 `<input>` 标签。
+
+*<input> 标签是 HTML 中让用户输入数据的标签*
+
+如果有一个“正常”的 POST 请求，你可以用 `-d` 来传输数据。`-d` 接受完整的 “post string”，格式为:
+
+```
+<variable1>=<data1>&<variable2>=<data2>&...
+```
+
+*post string 就是把一段字符串组织出来的 POST 请求*
+
+`variable*` 名称是在 `<input>` 标签中的 `name` 属性的值，就是请求的名称，而 `data*` 是您要为输入的内容。数据必须经过的URL编码。这意味着要用 `%XX` 替换奇怪的字母(如中文，中文符号，空格)，其中 `XX` 是字母的ASCII码的十六进制表示。
+
+*\* 在linux中表示多个任意字*
+
+事例:
+
+(网页在 http://www.formpost.com/getthis/)
+
+```html
+<form action="post.cgi" method="post">
+<input name=user size=10>
+<input name=pass type=password size=10>
+<input name=id type=hidden value="blablabla">
+<input name=ding value="submit">
+</form>
+```
+
+我们要输入的用户名是 `foobar` ，密码是 `12345`。
+
+```bash
+curl -d "user=foobar&pass=12345&id=blablabla&ding=submit" \
+  http://www.formpost.com/getthis/post.cgi
+```
+
+`-d` 参数使用的是 `application/x-www-form-urlencoded` 传输类型，CGI和类似的文件通常都能理解，但是curl也支持功能更强的 `multipart/form` 传输类型，这一种类型很像文件上传。
+
+`-F` 接受像 `-F "name=contents"` 这样的参数。如果要从文件中读取内容传输，请使用 `@filename` 作为内容。指定文件时，还可以通过在文件名后追加 `;type=<mime type>` 来指定文件内容类型。也可以在一个字段中发布多个文件的内容。例如，属性名 `coolfiles` 用于发送三个不同类型的文件，使用以下语法:
+
+```bash
+curl -F "coolfiles=@fil1.gif;type=image/gif,fil2.txt,fil3.html" \
+  http://www.post.com/postit.cgi
+```
+
+如果没有指定内容类型，curl将尝试从文件后缀推测(curl只知道几个文件后缀)，或者使用以前指定的类型(如果指定了多个文件，会使用以前指定过的类型的文件)，如果文件后缀是以前没有指定过的文件类型，它将使用默认类型 `application/octet-stream` 。
+
+还可以用 `-F` 模拟填充表单。假设您在一个表单中填充了三个字段。一个字段是要发布的文件名，一个字段是您的名字，一个字段是文件说明。我们要发布我们写的文件 `cooltext.txt` 。 为了让curl代替您经常使用的浏览器传输这些数据，您必须看表单页面的HTML源码并找到 `input` 标签的name属性。在我们的示例中，`input name` 为`file` 、`yourname` 和 `filedescription` 。
+
+```bash
+curl -F "file=@cooltext.txt" -F "yourname=Daniel" \
+  -F "filedescription=Cool text file with cool text inside" \
+    http://www.post.com/postit.cgi
+```
+
+如果你要一次发送两个及以上的文件，有两种办法给你选择:
+
+在一个 name 里填写多个文件，用 `,` 分隔:
+
+```bash
+curl -F "pictures=@dog.gif,cat.gif" $URL
+```
+
+填写两个及以上的 name(每个前都要有 `-F` 参数):
+
+```bash
+curl -F "docpicture=@dog.gif" -F "catpicture=@cat.gif" $URL
+```
+
+如果要按字面方式发送 name 值，而不解释前缀是 `@` 或 `<` ,或嵌入的 `;type=` ，请使用 `--form-string` 而不是 `-F` 。当值是从用户或其他不可预知的地方获取时，建议使用这种方法。在这种情况下(不是前面那种情况)，使用 `-F` 而不是 `--form-string` 用户可以欺骗curl上传文件。
+
 
