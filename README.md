@@ -5,4 +5,4 @@
 |文档|路径|进行程度|负责人|
 |:-:|:-:|:-:|:-:|
 |curl教程|docs/manual.md|进度表|@lihai2333|
-
+|curl命令行上的教程|docs/command_manual.md|刚开始|@lihai2333
