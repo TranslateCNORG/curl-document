@@ -552,6 +552,91 @@ curl -b cookie.txt -c cookie.txt https://www.baidu.com
 * Time Left - 预计完成时间
 * Current Speed - 最后5秒的平均传输速度
 
-参数 `-#` 表示一个完全不同的百分进度条，只有下载进度。
+`-#` 参数表示一个完全不同的百分进度条，只有下载进度。
 
+## 速度限制
 
+curl允许用户设置传输速度条件，必须满足这些条件才能传输数据。`-y` 和 `-Y` 参数，如果传输速度在指定的时间内低于用户指定的最低限制，curl就会停止传输。
+
+*-Y 参数用来限制最低速度。-y 参数用来指定小于最低速度后持续几秒钟停止传输的时间。-Y 以 bytes 为单位，-y以秒为单位*
+
+如果速度小于 3000b/s 并持续1分钟，curl就会停止下载:
+
+```bash
+curl -Y 3000 -y 60 https://opentuna.cn/ubuntu-releases/20.04.1/ubuntu-20.04.1-desktop-amd64.iso
+```
+
+还可以用 `-m` 参数来限制传输完成的时间(以秒为单位)，如果在指定时间里未完成，停止传输:
+
+```bash
+curl -m 180 -Y 3000 -y 60 https://opentuna.cn/ubuntu-releases/20.04.1/ubuntu-20.04.1-desktop-amd64.iso
+```
+
+强制curl传输数据的速度不超过指定的速率也是可以的，如果您使用的是移动数据等有流量限制的网络，并且你不希望你的传输占用所有带宽(有时称为“带宽限制”，可以用来省流量)。
+
+*--limit-rate 参数用来限制传输速度，值不指定单位默认为 bytes ，也可以指定其他单位，如kb,gb,tb,eb,pb...*
+
+让curl传输数据的速度不超过 10kb/s :
+
+```bash
+curl --limit-rate 10kb https://opentuna.cn/ubuntu-releas
+es/20.04.1/ubuntu-20.04.1-desktop-amd64.iso # 这条指令指定了传输的速度和速度单位
+```
+
+也可以无单位，默认为 bytes :
+
+```bash
+curl --limit-rate 10240 https://opentuna.cn/ubuntu-releas   es/20.04.1/ubuntu-20.04.1-desktop-amd64.iso
+```
+
+还可以不让curl以 1M/s 的速度上传数据:
+
+```bash
+curl -T upload --limit-rate 1M ftp://uploadshereplease.com
+```
+
+使用 `--limit-rate` 参数时，传输速率以每秒为单位进行设置，这将导致总传输速度小于指定的数字。
+
+## 配置curl文件
+
+curl在启动时会尝试从用户的 `home` 目录下读取 .curlrc 文件(或在Windows上为 \_curlrc 文件)。
+
+配置文件可以用普通的命令行参数组成，可以指定不带破折号的长型态参数，提升可读性。可以用空格或 `=` 或 `:` 指定参数。可以在文件中使用注释。如果一行中的第一个字母是 `#` 符号，则这行的将被视为注释。
+
+例如在文件中完成时间和配置代理:
+
+```
+-m 1800
+
+proxy = proxy.our.domain.com:8080
+```
+
+空行是很重要的，可以提升可读性，但是所有空行都会被curl忽略。
+
+可以通过 `-q` 参数，不让curl读取配置文件(相当于不遵守配置文件中的设置:
+
+```bash
+curl -q www.baidu.com
+```
+
+还可以配置在没有URL的情况下获取指定URL的数据:
+
+```
+URL = https://www.baidu.com/
+```
+
+可以使用 `-K`/`--config` 参数指定读取另外的配置文件。如果您将配置文件名称设置为 `-` 它将从 `stdin` 读取配置，如果您想隐藏命令行的参数，这会很方便:
+
+```bash
+echo "user = user:passwd" | curl -K - http://that.secret.site.com
+```
+
+## 设置的headers
+
+有时候您可能需要获取网页时传递自己的自定义headers。您可以使用 `-H` 参数来自定义。
+
+例如，在获取页面时，将headers `X-you-and-me:yes` 发送到服务器:
+
+```bash
+curl -H "X-you-and-me: yes" www.love.com
+```
